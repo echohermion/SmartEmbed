@@ -61,9 +61,9 @@ class Clone_Detect(object):
         '''
             save user input into file
         '''
-        if not os.path.exists( self.USERINPUT ):
+        if not os.path.exists(self.USERINPUT):
             os.makedirs(self.USERINPUT)
-        with open( self.USERINPUT + 'user_input.sol', 'w') as handle:
+        with open(self.USERINPUT + 'user_input.sol', 'w') as handle:
             handle.write(user_in)
     
     def parser(self):
@@ -98,7 +98,8 @@ class Clone_Detect(object):
         similarity_matrix = 1 - np.divide(numerator, denominator)
         return similarity_matrix
 
-    def get_top(self, contract_vector, N=5):
+    # Exp: set N = 10
+    def get_top(self, contract_vector, N=10):
         # print("entering get_top ...")
         sm = self.similarity_matrix(contract_vector, self.contract_embedding_matrix)
         score = np.copy(sm) 
@@ -110,35 +111,45 @@ class Clone_Detect(object):
         top_result = []
         for score, index in zip(topN_score, topN_index):
             url = self.sorted_contract_embeddings[index][0].split('@')[0]
-            url_full = 'https://etherscan.io/address/' + url + '#code'
-            contract_detailer = Contract_Detail(url)
-            try:
-                source_code = str(contract_detailer.get_source_code()[0])
-            except Exception as e:
-                source_code = "Sorry, Source code unavailable here. Please go to the link under contract URL!"
-            top_result.append((url_full, score, source_code))
+            # url_full = 'https://etherscan.io/address/' + url + '#code'
+            url_full = 'https://cn.etherscan.com/address/' + url + '#code'
+            # contract_detailer = Contract_Detail(url)
+            # try:
+            #     source_code = str(contract_detailer.get_source_code()[0])
+            # except Exception as e:
+            #     source_code = "Sorry, Source code unavailable here. Please go to the link under contract URL!"
+            # top_result.append((url_full, score, source_code))
+            top_result.append((url_full, score))
         return top_result
 
-
+    # user_in: input file
     def get_similarity(self, user_in):
-        self.save_to_file(user_in)
+        # self.save_to_file(user_in)
         self.parser()
         norm_result = self.normalizer()
         vec_result = self.vectorizer(norm_result)
-        top_result = self.get_top(vec_result, N=5)
+        top_result = self.get_top(vec_result, N=10)
         return top_result   
     
 
-def main():
+def main(filepath):
     # Test Clone_Detect()
-    cd = Clone_Detect()
-    user_in = open('./test.sol', 'r').read()
-    top_result = cd.get_similarity(user_in)
-    print(top_result)
+    f = open('../todo/output.txt', "w+")   # output file
+    sys.stdout = f
+
+    fileList = os.listdir(filepath)
+    for file in fileList:
+        cd = Clone_Detect()
+        user_in = open(filepath + file, 'r').read()
+        print("File: " + file)
+        top_result = cd.get_similarity(user_in)
+        for r in top_result:
+          print(r)
     pass
 
+
 if __name__ == '__main__':
-    main()
+    main(filepath='../contract/openzeppelin_contract/')
 
 
 
