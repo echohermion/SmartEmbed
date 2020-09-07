@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import urllib
-import urllib2
+import urllib.request
 import random
 
 USER_AGENT_LIST = [
@@ -33,23 +33,23 @@ def crawl_url_by_get(url, proxy=None, enable_proxy=False):
     method = 'GET'
     
     # create a handler 
-    proxy_handler = urllib2.ProxyHandler(proxy)
-    null_proxy_handler = urllib2.ProxyHandler({}) 
+    proxy_handler = urllib.request.ProxyHandler(proxy)
+    null_proxy_handler = urllib.request.ProxyHandler({})
     
     # create an openerdirector instance according to enable_proxy
     if enable_proxy:
-        cookies = urllib2.HTTPCookieProcessor()
-        opener = urllib2.build_opener(cookies, proxy_handler, urllib2.HTTPHandler)
+        cookies = urllib.request.HTTPCookieProcessor()
+        opener = urllib.request.build_opener(cookies, proxy_handler, urllib.request.urlopen.HTTPHandler)
         # print 'using proxy to crawl pages', url
     else :
-        opener = urllib2.build_opener(null_proxy_handler)
+        opener = urllib.request.build_opener(null_proxy_handler)
         # print 'without using proxy to crawl pages', url
     
     # install opener 
-    urllib2.install_opener(opener)
+    urllib.request.install_opener(opener)
     
     # buidl a request 
-    request = urllib2.Request(url)
+    request = urllib.request.Request(url)
     
     # Umcomment the below line for ramdom choose the user_agent 
     # user_agent = random.choice(USER_AGENT_LSIT)
@@ -64,27 +64,34 @@ def crawl_url_by_get(url, proxy=None, enable_proxy=False):
             return html
         else :
             return None
-    except urllib2.HTTPError, ex:
-        # print e.code, e.reason
-        print 'spider_url_by_get（） -------- ', str(ex) 
-        connection = ex
-        return None
-    except urllib2.URLError, ex:
-        # print e.reason
-        # print e.code, e.reason
-        print 'spider_url_by_get（） -------- ', str(ex) 
+    # except urllib.request.HTTPError:
+    #     # print e.code, e.reason
+    #     # print('spider_url_by_get（） -------- ', str(ex))
+    #     # print('spider_url_by_get（） -------- '\\)
+    #     print(urllib.request.HTTPError)
+    #     # connection = ex
+    #     return None
+    # except urllib.request.URLError:
+    #     # print e.reason
+    #     # print e.code, e.reason
+    #     # print 'spider_url_by_get（） -------- ', str(ex)
+    #     # print 'spider_url_by_get（） -------- ')
+    #     print(urllib.request.urlopen.URLError)
+    #     # remove_proxy(proxy)
+    #     return None
+    except Exception:
+        # print 'spider_url_by_get（） -------- ', str(ex)
+        print(Exception)
         # remove_proxy(proxy)
         return None
-    except Exception, ex:
-        print 'spider_url_by_get（） -------- ', str(ex) 
-        # remove_proxy(proxy)
-        return None
+
 
 def main():
 	url = 'https://etherscan.io/address/0xda65eed883a48301d0ecf37465f135a7a0c9d978#code'
 	html = crawl_url_by_get(url, proxy=None, enable_proxy=True)
 	with open('./test_html', 'w') as f:
 		f.write(html)
+
 
 if __name__ == '__main__':
     main()

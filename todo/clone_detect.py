@@ -14,6 +14,12 @@ from contract_vectorize import Contract_Vec
 sys.path.append('../contract_level/Crawl')
 from contract_crawl import Contract_Detail
 
+# #!coding=utf-8
+# import importlib, sys
+# if sys.getdefaultencoding() != 'utf-8':
+#     importlib.reload(sys)
+#     sys.setdefaultencoding('utf-8')
+
 class Clone_Detect(object):
 
     def __init__(self):
@@ -22,7 +28,7 @@ class Clone_Detect(object):
         self.fasttext_model = self.get_fasttext_model()
         self.contract_embedding_matrix = self.get_contract_embedding_matrix()
         self.sorted_contract_embeddings = self.get_sorted_contract_embeddings()
-    
+
     def get_fasttext_model(self):
         '''
             load fasttext model
@@ -35,7 +41,9 @@ class Clone_Detect(object):
         '''    
             load contract_embedding_matrix
         '''
-        with open(self.config.contract_embedding_matrix, "r") as handle:
+        with open(self.config.contract_embedding_matrix, "rb+") as handle:
+            # handle = bytes(handle, encoding="utf-8")
+            # handle = str.encode(handle)
             CONTRACT_EMBEDDING_MATRIX = pickle.load(handle)
             print("CONTRACT_EMBEDDING_MATRIX loaded")
         return CONTRACT_EMBEDDING_MATRIX

@@ -104,7 +104,7 @@ def get_bugs_cat(user_in, display_these_bugs, bug_types):
 def main():
     user_in = open('./test.sol', 'r').read()
 
-    bug_types = ['Overflow_bug', 'Honeypot_bug', 'OwnerCVE_bug', 'PRNG_bug', 'blockhash_bug','contract_not_refund','international_scam','public_moves','re_entrancy']
+    bug_types = ['Overflow_bug', 'Honeypot_bug', 'OwnerCVE_bug', 'PRNG_bug', 'blockhash_bug', 'contract_not_refund', 'international_scam', 'public_moves', 're_entrancy']
     top_bug = get_bugs_cat(user_in, bug_types, bug_types)
     # top_result = get_bugs(user_in)
     # print("top results:")

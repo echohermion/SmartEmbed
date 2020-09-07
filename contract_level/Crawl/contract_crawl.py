@@ -175,7 +175,7 @@ class Contract_Detail(object):
             self.get_basic_info()
             # return basic_info, True
             return True
-        except Exception, ex:
+        except Exception:
 #             print 'get_contract_detail（） -------- ', str(ex) 
             # return None, False
             return False
